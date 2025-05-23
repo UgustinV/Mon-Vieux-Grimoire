@@ -1,9 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+dotenv.config();
 
+const userRoutes = require('./routes/user');
+const dbPassword = process.env.DB_PASSWORD;
 const app = express();
-
-mongoose.connect('mongodb+srv://augustinviard0:LlqhvMPhXNEiSmYn@cluster0.c5ol8m0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+mongoose.connect('mongodb+srv://augustinviard0:' + dbPassword + '@cluster0.c5ol8m0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
@@ -17,20 +20,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post('/api/books', (req, res, next) => {
-    console.log("Future db call")
-    res.status(201).json({
-        message : 'Book added successfully'
-    })
-});
-
-app.get('/api/books', (req, res, next) => {
-    const book = {
-        id: 1,
-        title: 'Example',
-        rating: 0
-    }
-    res.status(200).json(book)
-});
+app.use('/api/auth', userRoutes);
+app.use('/api/books', bookRoutes);
 
 module.exports = app;
