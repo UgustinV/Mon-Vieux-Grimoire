@@ -1,4 +1,5 @@
 const Book = require('../models/Book');
+const fs = require('fs');
 
 
 exports.getAllBooks = (req, res, next) => {
@@ -8,7 +9,7 @@ exports.getAllBooks = (req, res, next) => {
 };
 
 exports.getBook = (req, res, next) => {
-    Book.findOne({ _id: req.params.bookid })
+    Book.findOne({ _id: req.params.id })
         .then(book => {
             if (!book) {
                 return res.status(404).json({ error: 'Livre non trouvé' });
@@ -36,8 +37,28 @@ exports.addBook = (req, res, next) => {
     .catch(error => res.status(400).json({error}));
 };
 
-exports.updateBook = (req, res, next) => {};
+exports.updateBook = (req, res, next) => {
+    const bookObject = req.file ? {
+        ...JSON.parse(req.body.book),
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    } : { ...req.body };
 
-exports.deleteBook = (req, res, next) => {};
+    Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
+        .then(() => res.status(200).json({ message: 'Livre modifié' }))
+        .catch(error => res.status(400).json({ error }));
+};
+
+exports.deleteBook = (req, res, next) => {
+    Book.findOne({ _id: req.params.id })
+        .then(book => {
+            const filename = book.imageUrl.split('/images/')[1];
+            fs.unlink(`images/${filename}`, () => {
+                Book.deleteOne({ _id: req.params.bookid })
+                    .then(() => res.status(200).json({ message: 'Livre supprimé' }))
+                    .catch(error => res.status(401).json({ error }));
+            });
+        })
+        .catch(error => res.status(500).json({ error }));
+};
 
 exports.userRating = (req, res, next) => {};
