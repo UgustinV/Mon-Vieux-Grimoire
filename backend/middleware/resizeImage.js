@@ -1,9 +1,17 @@
 const sharp = require('sharp');
 const path = require('path');
+const fs = require('fs');
 
 module.exports = async (req, res, next) => {
     if (!req.file) return next();
-
+    const folderName = path.join(__dirname, '../images');
+    try {
+        if (!fs.existsSync(folderName)) {
+            fs.mkdirSync(folderName);
+        }
+    } catch (err) {
+        console.error(err);
+    }
     const name = req.file.originalname.split(' ').join('_');
     const filename = `${name}${Date.now()}.webp`;
     const outputPath = path.join(__dirname, '../images', filename);

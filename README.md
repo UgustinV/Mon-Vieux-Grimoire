@@ -32,6 +32,7 @@ git clone https://github.com/UgustinV/Mon-Vieux-Grimoire.git
 ```
 Ensuite, rendez vous dans le dossier créé sur bash.
 Installez npm s'il ne l'est pas déjà : https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
+
 Lancez la commande suivante dans le dossier /frontend (répétez l'opération dans le dossier /backend) :
 ```
 npm install

@@ -2,6 +2,10 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const passwordSchema = require('../utils/passwordValidator');
 const User = require('../models/User');
+const dotenv = require('dotenv');
+dotenv.config();
+
+secret = process.env.TOKEN_SECRET
 
 exports.signup = (req, res, next) => {
     if (!passwordSchema.validate(req.body.password)) {
@@ -37,7 +41,7 @@ exports.login = (req, res, next) => {
                        userId: user._id,
                        token: jwt.sign(
                             { userId: user._id },
-                            'RANDOM_TOKEN_SECRET',
+                            secret,
                             { expiresIn: '24h' }
                        )
                    });
